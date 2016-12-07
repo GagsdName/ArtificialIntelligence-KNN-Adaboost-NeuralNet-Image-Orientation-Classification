@@ -1,49 +1,5 @@
 import sys, math
 import numpy as np 
-
-# ************************************** Common *********************************************
-train_dict={}
-test_dict={}
-
-input = sys.argv[1:5] #input arguments
-if len(input) > 3: #check to see if correct number of arguments are there
-        train_file = input[0]
-        test_file = input[1]
-        mode = input[2]
-        stump = input[3]
-	readTrainFile(str(train_file))
-	readTestFile(str(test_file))
-
-	if mode == "adaboost":
-		train_adaboost(stump)
-		run_adaboost_test()
-else:
-	print "enter all input parameters!"
-
-#read training file
-def readTestFile(filename):
-	f = open(filename, 'r')
-	for line in f:
-		lineTokens = line.split()
-		photo_id = str(lineTokens[0])
-		orientation = int(lineTokens[1])
-		vector = lineTokens[2::]
-		if photo_id not in train_dict:
-			test_dict[photo_id] = {}
-		test_dict[photo_id][orientation] = vector
-
-#read training file
-def readTrainFile(filename):
-	f = open(filename, 'r')
-	for line in f:
-		lineTokens = line.split()
-		photo_id = str(lineTokens[0])
-		orientation = int(lineTokens[1])
-		vector = lineTokens[2::]
-		if photo_id not in train_dict:
-			train_dict[photo_id] = {}
-		train_dict[photo_id][orientation] = vector
-
 # ************************************** Knn ************************************************
 
 #Nearest Neighbor Classifier
@@ -211,3 +167,45 @@ def classify_image(image, c):
 # ************************************** Neural nets ************************************************
 
 
+# ************************************** Common *********************************************
+train_dict={}
+test_dict={}
+
+#read training file
+def readTestFile(filename):
+	f = open(filename, 'r')
+	for line in f:
+		lineTokens = line.split()
+		photo_id = str(lineTokens[0])
+		orientation = int(lineTokens[1])
+		vector = lineTokens[2::]
+		if photo_id not in train_dict:
+			test_dict[photo_id] = {}
+		test_dict[photo_id][orientation] = vector
+
+#read training file
+def readTrainFile(filename):
+	f = open(filename, 'r')
+	for line in f:
+		lineTokens = line.split()
+		photo_id = str(lineTokens[0])
+		orientation = int(lineTokens[1])
+		vector = lineTokens[2::]
+		if photo_id not in train_dict:
+			train_dict[photo_id] = {}
+		train_dict[photo_id][orientation] = vector
+
+input = sys.argv[1:5] #input arguments
+if len(input) > 3: #check to see if correct number of arguments are there
+        train_file = input[0]
+        test_file = input[1]
+        mode = input[2]
+        stump = input[3]
+	readTrainFile(str(train_file))
+	readTestFile(str(test_file))
+
+	if mode == "adaboost":
+		train_adaboost(stump)
+		run_adaboost_test()
+else:
+	print "enter all input parameters!"
