@@ -131,9 +131,9 @@ def run_adaboost_test():
 		orientation = test_dict[i].keys()[0]
 		vector = test_dict[i].values()[0]
 		predicted_orientation = get_orientation(vector)
-		print "Topic: ",
+		print "Orientation: ",
 		print orientation,
-		print "		Topic Predicted: ",
+		print "		Orientation Predicted: ",
 		print predicted_orientation
 		if predicted_orientation == orientation:
 			correct += 1
