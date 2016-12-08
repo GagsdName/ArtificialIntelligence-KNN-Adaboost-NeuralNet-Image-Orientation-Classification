@@ -59,14 +59,37 @@ class NeuralNet:
             inputValues = newInputValues
         # The returned inputValues will be the output values of neurons from the outputLayer
         return inputValues
+    
+    # calculateDerivative method calculates the derivative of the output value of a neuron
+    def calculateDerivative(self, neuron):
+        outputVal = neuron['outputVal']
+        return (outputVal * (1.0-outputVal))
+    
+    # backPropagateError method back-propagates the error starting from the outputLayer in reverse direction
+    def backPropagateError(self, expected):
+        # Calculate the error for the outputLayer first
+        outputLayer = self.network[-1]
+        for i in range(len(outputLayer)):
+            neuron = outputLayer[i]
+            actualOutput = neuron['outputVal']
+            neuron['error'] = (expected[i]-actualOutput)*self.calculateDerivative(neuron)
+        # Now start from the penultimate layer in reverse direction
+        for i in reversed(range(len(self.network)-1)):
+            currentLayer = self.network[i]
+            # Calculate the error value for each neuron in currentLayer
+            for j in range(len(currentLayer)):
+                currentNeuron = currentLayer[j]
+                error = 0.0
+                for neuron in self.network[i+1]:
+                    error += neuron['weights'][j] * neuron['error']
+                currentNeuron['error'] = error * self.calculateDerivative(currentNeuron)
 
-'''
-nnTest = NeuralNet()
+"""nnTest = NeuralNet()
 # test forward propagation
-network = [[{'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
-        [{'weights': [0.2550690257394217, 0.49543508709194095]}, {'weights': [0.4494910647887381, 0.651592972722763]}]]
+network = [[{'outputVal': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
+        [{'outputVal': 0.6213859615555266, 'weights': [0.2550690257394217, 0.49543508709194095]}, {'outputVal': 0.6573693455986976, 'weights': [0.4494910647887381, 0.651592972722763]}]]
 nnTest.setNetwork(network)
-inputValues = [1, 0]
-output = nnTest.forwardPropogate(inputValues)
-print(output)
-'''
+expected = [0, 1]
+nnTest.backPropagateError(expected)
+for layer in nnTest.network:
+    print(layer)"""
