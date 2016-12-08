@@ -18,6 +18,10 @@ class NeuralNet:
         hiddenLayer = []
         outputLayer = []
         # Initialize the neurons in Hidden and Output layer with random weights
+        # In the hidden layer, the length of weight list within each neuron will be input_n+1
+        # The extra weight at the end is assumed to be for bias.
+        # Similarly, in the Output Layer, the length of weight list within each neuron will be hidden_n+1
+        # The extra weight at the end is assumed to be for bias.
         for _ in range(hidden_n):
             hiddenLayer.append({'weights':[random() for _ in range(input_n+1)]})
         for _ in range(output_n):
@@ -25,3 +29,11 @@ class NeuralNet:
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
         
+    # activateNeuron is the activation function which computes activation value
+    # Input: 1) neuron to be activated 2) list of input values
+    def activateNeuron(self, neuron, inputParam):
+        weights = neuron['weights']
+        bias = weights[-1] # The last weight value is assumed to be for bias
+        return (bias + (sum([weights[i]*inputParam[i] for i in range(0,len(inputParam))])))
+    
+    
