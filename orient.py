@@ -195,17 +195,21 @@ def readTrainFile(filename):
 			train_dict[photo_id] = {}
 		train_dict[photo_id][orientation] = vector
 
-input = sys.argv[1:5] #input arguments
-if len(input) > 3: #check to see if correct number of arguments are there
-        train_file = input[0]
-        test_file = input[1]
-        mode = input[2]
-        stump = input[3]
-	readTrainFile(str(train_file))
-	readTestFile(str(test_file))
-
-	if mode == "adaboost":
-		train_adaboost(stump)
-		run_adaboost_test()
-else:
+inputArg = sys.argv[1:5] #input arguments
+if len(inputArg) < 4: #check to see if correct number of arguments are there
 	print "enter all input parameters!"
+	exit()
+train_file = inputArg[0]
+test_file = inputArg[1]
+mode = inputArg[2]
+stump = inputArg[3]
+readTrainFile(str(train_file))
+readTestFile(str(test_file))
+
+if mode == "adaboost":
+	train_adaboost(stump)
+	run_adaboost_test()
+
+if mode == 'nnet':
+	# stump = number of neurons in hidden layer
+	# Output classes = 4 ==> Number of neurons in outputLayer = 4
