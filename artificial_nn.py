@@ -11,6 +11,9 @@ class NeuralNet:
         # represented by a dictionary. So effectively, each layer will be a list of dictionaries.
         # We don't have an actual input layer below, since it is nothing but the feature vector itself.
         self.network = []
+        # This dict will be used during training to transform orientation value to an index value for
+        # expected output vector
+        self.toIndexTransformer = {0:0, 90:1, 180:2, 270:3}
     
     # setNetwork allows us to set-up an existing network and use it for testing purpose
     def setNetwork(self, network):
@@ -33,6 +36,8 @@ class NeuralNet:
             outputLayer.append({'weights':[random() for _ in range(hidden_n+1)]})
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
+        print('Network initialized!')
+        print(self.network)
         
     # activateNeuron is the activation function which computes activation value
     # Input: 1) neuron to be activated 2) list of input values
@@ -95,13 +100,40 @@ class NeuralNet:
                 inputSet = [neuron['outputVal'] for neuron in self.network[i-1]]
             for neuron in self.network[i]:
                 # Update all weights except the bais-weight in current neuron
-                for j in range(len(neuron['weights']-1)):
+                for j in range(len(neuron['weights'])-1):
                     neuron['weights'][j] += learningRate * neuron['error'] * inputSet[j]
                 # Update the bias-weight
                 neuron['weights'][-1] += learningRate * neuron['error']
-                
-    
-        
+       
+    # train_Network method is called from the main script - orient.py to train the Neural Net from training data
+    # 1) trainingData = training data read from training file and passed as a dict
+    # 2) learningRate = Rate of learning for the network
+    # 3) epoch = Number of training iterations ever training data
+    # 4) outputClassCount = Number of possible output values = 4
+    def train_Network(self, trainingData, learningRate, epochs, outputClassCount):
+        for i in range(epochs):
+            print("{}-{}".format('Current Epoch', i))
+            # Calculate the Squared Error for each epoch
+            error = 0.0
+            for photoId in trainingData:
+                for orientation in trainingData[photoId]:
+                    # Convert the string array to int array
+                    inputVector = [int(x) for x in trainingData[photoId][orientation]]
+                    networkOutput = self.forwardPropogate(inputVector)
+                    # Set the expected output vector
+                    expectedOutput = [0] * outputClassCount
+                    expectedOutput[self.toIndexTransformer[orientation]] = 1
+                    for j in range(len(expectedOutput)):
+                        error += (expectedOutput[j]-networkOutput[j])**2
+                    # Back-propagate the error
+                    self.backPropagateError(expectedOutput)
+                    # Update the weights of each neuron in network
+                    self.updateNeuronWeights(inputVector, learningRate)
+            print("{}-{}".format('Squared error for current epoch: ', error))
+        print('Training Complete! Below is the final network configuration.')
+        print(self.network)                    
+                    
+                    
 """nnTest = NeuralNet()
 # test forward propagation
 network = [[{'outputVal': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],

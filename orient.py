@@ -1,5 +1,6 @@
 import sys, math
-import numpy as np 
+import numpy as np
+from artificial_nn import NeuralNet
 # ************************************** Knn ************************************************
 
 #Nearest Neighbor Classifier
@@ -8,10 +9,9 @@ def nearestNeighbor(testFileName):
 	for line in f:
 		lineTokens = line.split()
 		vector = lineTokens
-	
-	 	min_val = 999999999999
-         	nearest = ""
-         	euc_sum = 0
+		min_val = 999999999999
+		nearest = ""
+		euc_sum = 0
 
 		for key in train_dict:
 			size_train = len(train_dict[key]["vector"])
@@ -173,6 +173,7 @@ test_dict={}
 
 #read training file
 def readTestFile(filename):
+	print('Reading test file...')
 	f = open(filename, 'r')
 	for line in f:
 		lineTokens = line.split()
@@ -182,9 +183,12 @@ def readTestFile(filename):
 		if photo_id not in train_dict:
 			test_dict[photo_id] = {}
 		test_dict[photo_id][orientation] = vector
+	f.close()
+	print('Reading test file complete!')
 
 #read training file
 def readTrainFile(filename):
+	print('Reading training file...')
 	f = open(filename, 'r')
 	for line in f:
 		lineTokens = line.split()
@@ -194,6 +198,8 @@ def readTrainFile(filename):
 		if photo_id not in train_dict:
 			train_dict[photo_id] = {}
 		train_dict[photo_id][orientation] = vector
+	f.close()
+	print('Reading training file complete!')
 
 inputArg = sys.argv[1:5] #input arguments
 if len(inputArg) < 4: #check to see if correct number of arguments are there
@@ -213,4 +219,10 @@ if mode == "adaboost":
 if mode == 'nnet':
 	# stump = number of neurons in hidden layer
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
-	pass
+	# Number of neurons in inputLayer = length of feature vector = 192
+	# Set-up the Neural Net
+	nnet = NeuralNet()
+	nnet.initializeNN(192, int(stump), 4)
+	nnet.train_Network(train_dict, 0.25, 5, 4)
+	
+	
