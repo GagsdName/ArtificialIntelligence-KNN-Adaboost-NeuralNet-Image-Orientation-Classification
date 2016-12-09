@@ -1,3 +1,4 @@
+from __future__ import division
 import sys, math
 import numpy as np
 from artificial_nn import NeuralNet
@@ -223,6 +224,19 @@ if mode == 'nnet':
 	# Set-up the Neural Net
 	nnet = NeuralNet()
 	nnet.initializeNN(192, int(stump), 4)
-	nnet.train_Network(train_dict, 0.25, 5, 4)
-	
+	nnet.train_Network(train_dict, 0.05, 100, 4)
+	# nnet.printNN()
+	# Run the trained neural network classifier on test data
+	totalCount = 0
+	correctCount = 0
+	for photoId in test_dict:
+		for orientation in test_dict[photoId]:
+			totalCount += 1
+			# Convert the string array to int array
+			# Dividing each input by 500 to scale it down and get a small activation value
+			inputVector = [(int(x)/500.0) for x in test_dict[photoId][orientation]]
+			prediction = nnet.predict(inputVector)
+			if prediction == orientation:
+				correctCount += 1
+	print("{}:{}".format('Neural Network Accuracy:', correctCount/totalCount))
 	
