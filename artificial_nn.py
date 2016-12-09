@@ -83,7 +83,25 @@ class NeuralNet:
                 for neuron in self.network[i+1]:
                     error += neuron['weights'][j] * neuron['error']
                 currentNeuron['error'] = error * self.calculateDerivative(currentNeuron)
-
+    
+    # updateNeuronWeights method updates the weight of each neuron in the network wrt. the input values
+    # The input for hiddenLayer is the set of input from inputLayer. The output from hiddenLayer will
+    # serve as input for the outputLayer.
+    def updateNeuronWeights(self, inputValues, learningRate):
+        for i in range(len(self.network)):
+            inputSet = inputValues
+            # if current layer is not 1st layer, then update the inputSet
+            if i>0:
+                inputSet = [neuron['outputVal'] for neuron in self.network[i-1]]
+            for neuron in self.network[i]:
+                # Update all weights except the bais-weight in current neuron
+                for j in range(len(neuron['weights']-1)):
+                    neuron['weights'][j] += learningRate * neuron['error'] * inputSet[j]
+                # Update the bias-weight
+                neuron['weights'][-1] += learningRate * neuron['error']
+                
+    
+        
 """nnTest = NeuralNet()
 # test forward propagation
 network = [[{'outputVal': 0.7105668883115941, 'weights': [0.13436424411240122, 0.8474337369372327, 0.763774618976614]}],
