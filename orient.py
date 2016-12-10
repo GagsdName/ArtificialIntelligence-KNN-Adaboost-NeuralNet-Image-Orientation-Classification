@@ -66,10 +66,10 @@ def create_stumps(stump):
 def create_stumps_for_orientation(orientation, stump):
 	number_of_pics = len(train_dict.keys())
 	weights = {}
-	#initial weights
 	
-	weights.update({-1:1.0/number_of_pics})
-	weights.update({1:1.0/number_of_pics})
+	#initial weights
+	for pic in train_dict:
+		weights.update({pic:1.0/number_of_pics})
 	
 	#initial right and wrong lists
 	for i in range(int(stump)):
@@ -89,16 +89,19 @@ def create_stumps_for_orientation(orientation, stump):
 				break
 
 		classifier_object.orientation = orientation
+
 		for pic in train_dict:
 			if not classify_image(train_dict[pic][orientation], classifier_object):
-				error += weights[-1]
+				error += weights[pic]
 				wrong.append(pic)
 			else:
 				right.append(pic)
-		
+
 		#calculate wrong weights
-		weights.update({1:0.5/len(right)})
-		weights.update({-1:0.5/len(wrong)})
+		for pic in right:
+			weights.update({pic:0.5/len(right)})
+		for pic in wrong:
+			weights.update({pic:0.5/len(wrong)})
 
 		classifier_object.alpha  = 0.5*np.log((1.0-error)/error)
 
@@ -111,6 +114,7 @@ def create_stumps_for_orientation(orientation, stump):
 		print orientation
 		print "Stump: ",
 		print i+1
+		print error
 		print classifier_object.comparator_one
 		print classifier_object.comparator_two
 		print classifier_object.alpha
@@ -176,7 +180,7 @@ def readTestFile(filename):
 		vector = lineTokens[2::]
 		if photo_id not in train_dict:
 			test_dict[photo_id] = {}
-		test_dict[photo_id][orientation] = vector
+		test_dict[photo_id][orientation] = map(int, vector)
 	f.close()
 	print('Reading test file complete!')
 
@@ -191,7 +195,7 @@ def readTrainFile(filename):
 		vector = lineTokens[2::]
 		if photo_id not in train_dict:
 			train_dict[photo_id] = {}
-		train_dict[photo_id][orientation] = vector
+		train_dict[photo_id][orientation] = map(int, vector)
 	f.close()
 	print('Reading training file complete!')
 
