@@ -222,9 +222,11 @@ if mode == 'nnet':
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
+	learningRate = float(sys.argv[-1]) if len(sys.argv)>4 else 1.5
 	nnet = NeuralNet()
 	nnet.initializeNN(192, int(stump), 4)
-	nnet.train_Network(train_dict, 0.05, 100, 4)
+	print("{}:{}".format('Learning Rate', learningRate))
+	nnet.train_Network(train_dict, learningRate, 20, 4)
 	# nnet.printNN()
 	# Run the trained neural network classifier on test data
 	totalCount = 0

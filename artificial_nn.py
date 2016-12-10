@@ -139,12 +139,12 @@ class NeuralNet:
                     # Update the weights of each neuron in network
                     self.updateNeuronWeights(inputVector, learningRate)
             print("{}-{}".format('Squared error for current epoch', error))
-            print(self.network)
+            # print(self.network)
         print('Training Complete! Below is the final network configuration.')
         
     def predict(self, featureVector):
         outputValues = self.forwardPropogate(featureVector)
-        return self.toOrientationTransformer(outputValues.index(max(outputValues)))
+        return self.toOrientationTransformer[outputValues.index(max(outputValues))]
     
     def printNN(self):
         for layer in self.network:
