@@ -76,7 +76,8 @@ def create_stumps_for_orientation(orientation, stump):
 		error = 0.0
 		right = []
 		wrong = []
-
+		length_right = 0
+		length_wrong = 0
 		classifier_object = classifier()
 		
 		#generate random comparator_one
@@ -96,6 +97,17 @@ def create_stumps_for_orientation(orientation, stump):
 			else:
 				right.append(pic)
 		
+		if error < 0.5:
+			length_right = len(right)
+			length_wrong = len(wrong)
+		else:
+			error = 1.0 - error
+			length_right = len(wrong)
+			length_wrong = len(right)
+			temp = classifier_object.comparator_one
+			classifier_object.comparator_one = classifier_object.comparator_two
+			classifier_object.comparator_two = temp
+
 		#calculate wrong weights
 		weights.update({1:0.5/len(right)})
 		weights.update({-1:0.5/len(wrong)})
