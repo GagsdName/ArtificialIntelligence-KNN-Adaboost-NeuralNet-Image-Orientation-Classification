@@ -46,7 +46,6 @@ class classifier(object):
 	comparator_one = None
 	comparator_two = None
 	alpha = None
-	error = None
 	orientation = None
 
 	
@@ -68,8 +67,9 @@ def create_stumps_for_orientation(orientation, stump):
 	number_of_pics = len(train_dict.keys())
 	weights = {}
 	#initial weights
-	for i in train_dict:
-		weights.update({i:1.0/number_of_pics})
+	
+	weights.update({-1:1.0/number_of_pics})
+	weights.update({1:1.0/number_of_pics})
 	
 	#initial right and wrong lists
 	for i in range(int(stump)):
@@ -91,19 +91,14 @@ def create_stumps_for_orientation(orientation, stump):
 		classifier_object.orientation = orientation
 		for pic in train_dict:
 			if not classify_image(train_dict[pic][orientation], classifier_object):
-				error += weights[pic]
+				error += weights[-1]
 				wrong.append(pic)
 			else:
 				right.append(pic)
 		
-		classifier_object.error = error
-
 		#calculate wrong weights
-		for keys in weights:
-			if keys in right:
-				weights.update({keys:0.5/len(right)})
-			else:
-				weights.update({keys:0.5/len(wrong)})
+		weights.update({1:0.5/len(right)})
+		weights.update({-1:0.5/len(wrong)})
 
 		classifier_object.alpha  = 0.5*np.log((1.0-error)/error)
 
@@ -118,8 +113,6 @@ def create_stumps_for_orientation(orientation, stump):
 		print i+1
 		print classifier_object.comparator_one
 		print classifier_object.comparator_two
-		print classifier_object.orientation
-		print error
 		print classifier_object.alpha
 		print "************"
 	return
