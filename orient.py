@@ -1,4 +1,4 @@
-import sys, math
+import sys, math, operator
 
 train_dict={}
 
@@ -15,49 +15,59 @@ def nearestNeighbor(testFileName):
 		total+=1
 		lineTokens = line.split()
 		vector = lineTokens
-	
-	 	min_val = 999999999999
-         	nearest = ""
-         	euc_sum = 0
-
-		for key in train_dict:
-			size_train = len(train_dict[key]["vector"])
-			size_test = len(lineTokens[2::])
-			size = 0
-			if size_test < size_train:
-				size = size_test
-			else: size = size_train
+		kvalue = 2 #k value for k neighbors
+		knearest={}
+		for i in range(kvalue):	
+	 		min_val = 999999999999
+         		euc_sum = 0
+			nearest = ""
+			for key in train_dict:
+				if key not in knearest:
+					size_train = len(train_dict[key]["vector"])
+					size_test = len(lineTokens[2::])
+					size = 0
+					if size_test < size_train:
+						size = size_test
+					else: size = size_train
 		
-			euc_sum = 0
-			for k in range(size):
-				train_veck = int(train_dict[key]["vector"][k])
-				test_veck = int(lineTokens[2::][k])
+					euc_sum = 0
+					for k in range(size):
+						train_veck = int(train_dict[key]["vector"][k])
+						test_veck = int(lineTokens[2::][k])
 				
-				diff = math.fabs(test_veck - train_veck)
-				euc_sum = euc_sum + diff ** 2
-			euclidean = math.sqrt(euc_sum)
-			#print euclidean
-			if euclidean < min_val:
-				min_val = euclidean
-				nearest = str(key)		 
+						diff = math.fabs(test_veck - train_veck)
+						euc_sum = euc_sum + diff ** 2
+				#euclidean = math.sqrt(euc_sum)
+				#print euclidean
+					if euc_sum < min_val:
+						min_val = euc_sum
+						nearest = str(key)		 
 	
-		print "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
-			 nearest, " with orientation - ", train_dict[nearest]["orientation"]
-		f1.write(str(lineTokens[0])+" "+str(train_dict[nearest]["orientation"])+"\n")
-		if lineTokens[1] == train_dict[nearest]["orientation"]:
-			correct+=1
-		else: 
-			conf_mtr[Labels[str(lineTokens[1])]][Labels[str(train_dict[nearest]["orientation"])]] +=1
+			#print "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
+			#	 nearest, " with orientation - ", train_dict[nearest]["orientation"]
+			#f1.write(str(lineTokens[0])+" "+str(train_dict[nearest]["orientation"])+"\n")
+			knearest.update({nearest:train_dict[nearest]["orientation"]})
+		#knearest.sort(key=operator.itemgetter(1))
+		sortedKneighbors = sorted(knearest.iteritems(), key=operator.itemgetter(1), reverse=True)
+		if int(lineTokens[1]) != sortedKneighbors[0][1]:
+			conf_mtr[Labels[str(lineTokens[1])]][Labels[str(sortedKneighbors[0][1])]] +=1
 	
+		print kvalue, "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
+			 sortedKneighbors[0][0], " with orientation - ", sortedKneighbors[0][1]
+		
+		f1.write(str(lineTokens[0])+" "+str(sortedKneighbors[0][1])+"\n")
         #printing confusion matrix
-        for x in range(4):
+        incorrect = 0
+	for x in range(4):
                 temp = ""
                 for y in range(4):
-                        temp = temp + str(conf_mtr[x][y])+"\t"
+                        if int(conf_mtr[x][y])!=0:
+				incorrect+=conf_mtr[x][y]
+			
+			temp = temp + str(conf_mtr[x][y])+"\t"
                 print temp+"\n"
 		
-
-	print "\nAccuracy = ", correct/total
+	print "\nAccuracy = ", float(total - incorrect)/total, "%"
 #read training file
 def readTrainFile(filename):
 	f = open(filename, 'r')
