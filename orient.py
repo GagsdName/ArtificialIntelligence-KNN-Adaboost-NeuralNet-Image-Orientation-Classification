@@ -4,7 +4,8 @@ train_dict={}
 
 #Nearest Neighbor Classifier
 def nearestNeighbor(testFileName):
-	f = open(testFileName)
+	f = open(testFileName,'r')
+	f1 = open('nearest_output.txt', 'w')
 	total = 0
 	correct = 0
 	w = 4 #length and width of the confusion matrix - given assumption in problem statement - total number of topics is 20
@@ -42,6 +43,7 @@ def nearestNeighbor(testFileName):
 	
 		print "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
 			 nearest, " with orientation - ", train_dict[nearest]["orientation"]
+		f1.write(str(lineTokens[0])+" "+str(train_dict[nearest]["orientation"])+"\n")
 		if lineTokens[1] == train_dict[nearest]["orientation"]:
 			correct+=1
 		else: 
@@ -53,6 +55,7 @@ def nearestNeighbor(testFileName):
                 for y in range(4):
                         temp = temp + str(conf_mtr[x][y])+"\t"
                 print temp+"\n"
+		
 
 	print "\nAccuracy = ", correct/total
 #read training file
