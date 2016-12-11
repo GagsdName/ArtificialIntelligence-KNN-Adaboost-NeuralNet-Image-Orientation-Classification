@@ -1,6 +1,3 @@
-'''
-@author: Manan
-'''
 from __future__ import division
 from random import random, seed
 from math import exp
@@ -39,7 +36,7 @@ class NeuralNet:
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
         print('Network initialized!')
-        print(self.network)
+        # print(self.network)
         
     # activateNeuron is the activation function which computes activation value
     # Input: 1) neuron to be activated 2) list of input values
@@ -113,12 +110,15 @@ class NeuralNet:
        
     # train_Network method is called from the main script - orient.py to train the Neural Net from training data
     # 1) trainingData = training data read from training file and passed as a dict
-    # 2) learningRate = Rate of learning for the network
-    # 3) epoch = Number of training iterations ever training data
-    # 4) outputClassCount = Number of possible output values = 4
+    # 2) epoch = Number of training iterations ever training data
+    # 3) outputClassCount = Number of possible output values = 4
     def train_Network(self, trainingData, learningRate, epochs, outputClassCount):
+        print("{} {} {}".format('Training will be done for', epochs, 'epochs.'))
         for i in range(epochs):
+            if (i+1)%10 == 0:
+                learningRate /= 2
             print("{}-{}".format('Current Epoch', i))
+            print("{}-{}".format('Learning Rate', learningRate))
             # Calculate the Squared Error for each epoch
             error = 0.0
             for photoId in trainingData:
@@ -140,7 +140,7 @@ class NeuralNet:
                     self.updateNeuronWeights(inputVector, learningRate)
             print("{}-{}".format('Squared error for current epoch', error))
             # print(self.network)
-        print('Training Complete! Below is the final network configuration.')
+        print('Training Complete!')
         
     def predict(self, featureVector):
         outputValues = self.forwardPropogate(featureVector)

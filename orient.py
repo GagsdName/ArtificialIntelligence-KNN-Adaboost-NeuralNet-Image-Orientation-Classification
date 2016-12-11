@@ -199,6 +199,27 @@ def readTrainFile(filename):
 	f.close()
 	print('Reading training file complete!')
 
+# Creates the Confusion Matrix	
+def create_conf_matrix(expected, predicted, n_classes):
+	toIndexTransformer = {0:0, 90:1, 180:2, 270:3}
+	m = [[0] * n_classes for _ in range(n_classes)]
+	for pred, exp in zip(predicted, expected):
+		m[toIndexTransformer[pred]][toIndexTransformer[exp]] += 1
+	return m
+
+# Calculates the accuracy from the confusion matrix
+def calc_accuracy(confMatrix):
+	t = sum(sum(l) for l in confMatrix)
+	return sum(confMatrix[i][i] for i in range(len(confMatrix))) / t
+
+# Prints the Confusion Matrix
+def printConfusionMatrix(confMatrix):
+	print('Confusion Matrix')
+	print(' | '.join([str(i) for i in [0, 90, 180, 270]]))
+	print('--------------------')
+	for row in confMatrix:
+		print(row)
+
 inputArg = sys.argv[1:5] #input arguments
 if len(inputArg) < 4: #check to see if correct number of arguments are there
 	print "enter all input parameters!"
@@ -219,23 +240,27 @@ if mode == 'nnet':
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
-	learningRate = float(sys.argv[-1]) if len(sys.argv)>4 else 1.5
+	learningRate = 3.6
+	epochs = 20
 	nnet = NeuralNet()
 	nnet.initializeNN(192, int(stump), 4)
-	print("{}:{}".format('Learning Rate', learningRate))
-	nnet.train_Network(train_dict, learningRate, 20, 4)
+	# print("{}:{}".format('Learning Rate', learningRate))
+	nnet.train_Network(train_dict, learningRate, epochs, 4)
 	# nnet.printNN()
 	# Run the trained neural network classifier on test data
-	totalCount = 0
-	correctCount = 0
+	correctLabels = []
+	predictedLabels = []
+	result = open('nnet_output.txt', 'w')
 	for photoId in test_dict:
 		for orientation in test_dict[photoId]:
-			totalCount += 1
 			# Convert the string array to int array
 			# Dividing each input by 500 to scale it down and get a small activation value
 			inputVector = [(int(x)/500.0) for x in test_dict[photoId][orientation]]
 			prediction = nnet.predict(inputVector)
-			if prediction == orientation:
-				correctCount += 1
-	print("{}:{}".format('Neural Network Accuracy:', correctCount/totalCount))
-	
+			result.write(photoId + ' ' + str(prediction) + '\n')
+			predictedLabels.append(prediction)
+			correctLabels.append(orientation)
+	result.close()
+	confMatrix = create_conf_matrix(correctLabels, predictedLabels, 4)
+	printConfusionMatrix(confMatrix)
+	print("{}:{}".format('Classification Accuracy', calc_accuracy(confMatrix)))
