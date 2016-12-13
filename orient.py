@@ -5,73 +5,31 @@ from artificial_nn import NeuralNet
 # ************************************** Knn ************************************************
 
 #Nearest Neighbor Classifier
-def nearestNeighbor(testFileName):
-        f = open(testFileName,'r')
-        f1 = open('nearest_output.txt', 'w')
-        total = 0
-        correct = 0
-        w = 4 #length and width of the confusion matrix - given assumption in problem statement - total number of topics is 20
-        conf_mtr = [[0 for x in range(w)] for y in range(w)] #intializing confusion matrix
-        Labels = {"0":0,"90":1,"180":2,"270":3}
-        for line in f:
-                total+=1
-                lineTokens = line.split()
-                vector = lineTokens
-                kvalue = 2 #k value for k neighbors
-                knearest={}
-                for i in range(kvalue):
-                        min_val = 999999999999
-                        euc_sum = 0
-                        nearest = ""
-                        nearest_orient = ""
-                        for key in train_dict:
-                                if key not in knearest:
-                                        for orient in train_dict[key]:
-                                                size_train = len(train_dict[key][orient])
-                                                size_test = len(lineTokens[2::])
-                                                size = 0
-                                                if size_test < size_train:
-                                                        size = size_test
-                                                else: size = size_train
+def nearestNeighbor():
+	correct = 0
+	total = 0
+	for pic in test_dict.values():
+		orientation = pic.keys()[0]
+		vector = pic.values()[0]
+		v1 = np.array(vector)
+		min_distance = sys.float_info.max
+		for train_pics in train_dict.values():
+			for i in range(len(train_pics)):
+				temp_orientation = train_pics.keys()[i]
+				temp_vector = train_pics.values()[i]
+				v2 = np.array(temp_vector)
+				distance = np.linalg.norm(v2-v1)
+				if distance < min_distance:
+					orientation_predicted = temp_orientation
+					min_distance = distance
+		print "Orientation: " + str(orientation) + "		Predicted: " + str(orientation_predicted)
+		if orientation_predicted == orientation:
+			correct += 1
+		total += 1
 
-                                                euc_sum = 0
-                                                for k in range(size):
-                                                        train_veck = int(train_dict[key][orient][k])
-                                                        test_veck = int(lineTokens[2::][k])
-
-                                                        diff = math.fabs(test_veck - train_veck)
-                                                        euc_sum = euc_sum + diff ** 2
-						 #euclidean = math.sqrt(euc_sum)
-                                                if euc_sum < min_val:
-                                                        min_val = euc_sum
-                                                        nearest = str(key)
-                                                        nearest_orient = str(orient)
-                        #print "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
-                        #        nearest, " with orientation - ", train_dict[nearest]["orientation"]
-                        #f1.write(str(lineTokens[0])+" "+str(train_dict[nearest]["orientation"])+"\n")
-                        knearest.update({nearest:nearest_orient})
-                #knearest.sort(key=operator.itemgetter(1))
-                sortedKneighbors = sorted(knearest.iteritems(), key=operator.itemgetter(1), reverse=True)
-                if int(lineTokens[1]) != int(sortedKneighbors[0][1]):
-                        conf_mtr[Labels[str(lineTokens[1])]][Labels[str(sortedKneighbors[0][1])]] +=1
-
-                print kvalue, "Nearest Neighbor for  - ", lineTokens[0], " with orientation - ", lineTokens[1], " is - ",\
-                         sortedKneighbors[0][0], " with orientation - ", sortedKneighbors[0][1]
-
-                f1.write(str(lineTokens[0])+" "+str(sortedKneighbors[0][1])+"\n")
-        #printing confusion matrix
-        incorrect = 0
-        for x in range(4):
-                temp = ""
-                for y in range(4):
-                        if int(conf_mtr[x][y])!=0:
-                                incorrect+=conf_mtr[x][y]
-
-                        temp = temp + str(conf_mtr[x][y])+"\t"
-                print temp+"\n"
-
-        print "\nAccuracy = ", float(float(total - incorrect)/total) * 100, "%"
-
+	print "Accuracy: ",
+	print correct*100.0/total
+	return
 # ************************************** Adaboost ************************************************
 stump_dict={}
 
@@ -80,9 +38,6 @@ class classifier(object):
 	comparator_two = None
 	alpha = None
 	orientation = None
-
-	
-
 
 def train_adaboost(stump):
 	create_stumps(stump)
@@ -195,9 +150,6 @@ def classify_image(image, c):
 		return True
 	return False
 
-# ************************************** Neural nets ************************************************
-
-
 # ************************************** Common *********************************************
 train_dict={}
 test_dict={}
@@ -254,20 +206,20 @@ def printConfusionMatrix(confMatrix):
 		print(row)
 
 inputArg = sys.argv[1:5] #input arguments
-if len(inputArg) < 4: #check to see if correct number of arguments are there
+if len(inputArg) < 3: #check to see if correct number of arguments are there
 	print "enter all input parameters!"
 	exit()
 train_file = inputArg[0]
 test_file = inputArg[1]
 mode = inputArg[2]
-stump = inputArg[3]
 readTrainFile(str(train_file))
+readTestFile(str(test_file))
 
 if mode == "nearest":
-	 nearestNeighbor(str(test_file))
+	 nearestNeighbor()
 	
 if mode == "adaboost":
-	readTestFile(str(test_file))
+	stump = inputArg[3]
 	train_adaboost(stump)
 	run_adaboost_test()
 
