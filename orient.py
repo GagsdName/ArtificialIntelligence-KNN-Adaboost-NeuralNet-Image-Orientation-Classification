@@ -54,7 +54,6 @@ def create_stumps(stump):
 def create_stumps_for_orientation(orientation, stump):
 	number_of_pics = len(train_dict.keys())
 	weights = {}
-	
 	#initial weights
 	for pic in train_dict:
 		weights.update({pic:1.0/number_of_pics})
@@ -91,28 +90,20 @@ def create_stumps_for_orientation(orientation, stump):
 		for pic in wrong:
 			weights.update({pic:0.5/len(wrong)})
 
+		#calculate alpha
 		classifier_object.alpha  = 0.5*np.log((1.0-error)/error)
 
 		if orientation in stump_dict:
 			stump_dict[orientation].append(classifier_object)
 		else:
 			stump_dict[orientation] = [classifier_object]
-
-		print "Orientation: ",
-		print orientation
-		print "Stump: ",
-		print i+1
-		print error
-		print classifier_object.comparator_one
-		print classifier_object.comparator_two
-		print classifier_object.alpha
-		print "************"
 	return
-
 
 def run_adaboost_test():
 	correct = 0
 	total = 0
+	correct_labels = []
+	predicted_labels = []
 	for i in test_dict:
 		orientation = test_dict[i].keys()[0]
 		vector = test_dict[i].values()[0]
@@ -121,15 +112,18 @@ def run_adaboost_test():
 		print orientation,
 		print "		Orientation Predicted: ",
 		print predicted_orientation
+	
 		if predicted_orientation == orientation:
 			correct += 1
 		total += 1
+		correct_labels.append(orientation)
+		predicted_labels.append(predicted_orientation)
 
+	printConfusionMatrix(create_conf_matrix(correct_labels, predicted_labels, 4))
 	print "Accuracy: ",
 	print correct*100.0/total
 
-	print correct
-	print total
+	return
 
 def get_orientation(vector):
 	orientation_values = {}
