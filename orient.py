@@ -234,7 +234,7 @@ if mode == "adaboost":
 	train_adaboost(stump)
 	run_adaboost_test()
 
-if mode == 'nnet':
+if mode == 'nnet' or 'best':
 	readTestFile(str(test_file))
 	# stump = number of neurons in hidden layer
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
