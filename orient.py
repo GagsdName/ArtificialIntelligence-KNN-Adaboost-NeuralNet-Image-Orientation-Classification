@@ -6,6 +6,10 @@ from artificial_nn import NeuralNet
 
 #Nearest Neighbor Classifier
 def nearestNeighbor():
+	w = 4 #length and width of the confusion matrix - given assumption in problem statement - total number of topics is 20
+        conf_mtr = [[0 for x in range(w)] for y in range(w)] #intializing confusion matrix
+        Labels = {"0":0,"90":1,"180":2,"270":3}
+	f1 = open('nearest_output.txt', 'w')
 	correct = 0
 	total = 0
 	for pic in test_dict.values():
@@ -22,13 +26,23 @@ def nearestNeighbor():
 				if distance < min_distance:
 					orientation_predicted = temp_orientation
 					min_distance = distance
-		print "Orientation: " + str(orientation) + "		Predicted: " + str(orientation_predicted)
+		print "Image ID: "+ test_dict.keys()[test_dict.values().index(pic)] + "    Orientation: " + str(orientation) +\
+		 "		Predicted: " + str(orientation_predicted)
+		f1.write(str(test_dict.keys()[test_dict.values().index(pic)])+" "+str(orientation_predicted)+"\n")	
 		if orientation_predicted == orientation:
 			correct += 1
+		else: conf_mtr[Labels[str(orientation)]][Labels[str(orientation_predicted)]] +=1
 		total += 1
 
+	#printing confusion matrix
+        for x in range(4):
+                temp = ""
+                for y in range(4):
+			temp = temp + str(conf_mtr[x][y])+"\t"
+                print temp+"\n"
+
 	print "Accuracy: ",
-	print correct*100.0/total
+	print str(correct*100.0/total)+"%"
 	return
 # ************************************** Adaboost ************************************************
 stump_dict={}
@@ -54,6 +68,7 @@ def create_stumps(stump):
 def create_stumps_for_orientation(orientation, stump):
 	number_of_pics = len(train_dict.keys())
 	weights = {}
+	
 	#initial weights
 	for pic in train_dict:
 		weights.update({pic:1.0/number_of_pics})
@@ -90,20 +105,28 @@ def create_stumps_for_orientation(orientation, stump):
 		for pic in wrong:
 			weights.update({pic:0.5/len(wrong)})
 
-		#calculate alpha
 		classifier_object.alpha  = 0.5*np.log((1.0-error)/error)
 
 		if orientation in stump_dict:
 			stump_dict[orientation].append(classifier_object)
 		else:
 			stump_dict[orientation] = [classifier_object]
+
+		print "Orientation: ",
+		print orientation
+		print "Stump: ",
+		print i+1
+		print error
+		print classifier_object.comparator_one
+		print classifier_object.comparator_two
+		print classifier_object.alpha
+		print "************"
 	return
+
 
 def run_adaboost_test():
 	correct = 0
 	total = 0
-	correct_labels = []
-	predicted_labels = []
 	for i in test_dict:
 		orientation = test_dict[i].keys()[0]
 		vector = test_dict[i].values()[0]
@@ -112,18 +135,15 @@ def run_adaboost_test():
 		print orientation,
 		print "		Orientation Predicted: ",
 		print predicted_orientation
-	
 		if predicted_orientation == orientation:
 			correct += 1
 		total += 1
-		correct_labels.append(orientation)
-		predicted_labels.append(predicted_orientation)
 
-	printConfusionMatrix(create_conf_matrix(correct_labels, predicted_labels, 4))
 	print "Accuracy: ",
 	print correct*100.0/total
 
-	return
+	print correct
+	print total
 
 def get_orientation(vector):
 	orientation_values = {}
@@ -224,7 +244,7 @@ if mode == 'nnet':
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
 	learningRate = 3.6
-	epochs = 25
+	epochs = 20
 	nnet = NeuralNet()
 	nnet.initializeNN(192, int(stump), 4)
 	# print("{}:{}".format('Learning Rate', learningRate))
