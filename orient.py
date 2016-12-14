@@ -234,7 +234,7 @@ if mode == "adaboost":
 	train_adaboost(stump)
 	run_adaboost_test()
 
-if mode == 'nnet' or 'best':
+if mode == 'nnet' or mode == 'best':
 	# stump = number of neurons in hidden layer
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
 	# Number of neurons in inputLayer = length of feature vector = 192
