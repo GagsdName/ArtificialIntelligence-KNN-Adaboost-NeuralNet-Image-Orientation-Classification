@@ -224,7 +224,7 @@ if mode == 'nnet':
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
 	learningRate = 3.6
-	epochs = 20
+	epochs = 25
 	nnet = NeuralNet()
 	nnet.initializeNN(192, int(stump), 4)
 	# print("{}:{}".format('Learning Rate', learningRate))

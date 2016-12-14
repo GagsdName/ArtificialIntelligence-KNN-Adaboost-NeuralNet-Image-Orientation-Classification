@@ -1,5 +1,5 @@
 from __future__ import division
-from random import random, seed
+from random import random, seed, uniform
 from math import exp
 # This class represents the Artificial Neural Network
 class NeuralNet:
@@ -30,9 +30,9 @@ class NeuralNet:
         # Similarly, in the Output Layer, the length of weight list within each neuron will be hidden_n+1
         # The extra weight at the end is assumed to be for bias.
         for _ in range(hidden_n):
-            hiddenLayer.append({'weights':[random() for _ in range(input_n+1)]})
+            hiddenLayer.append({'weights':[uniform(0.01, 0.2) for _ in range(input_n+1)]})
         for _ in range(output_n):
-            outputLayer.append({'weights':[random() for _ in range(hidden_n+1)]})
+            outputLayer.append({'weights':[uniform(0.01, 0.2) for _ in range(hidden_n+1)]})
         self.network.append(hiddenLayer)
         self.network.append(outputLayer)
         print('Network initialized!')
@@ -115,7 +115,7 @@ class NeuralNet:
     def train_Network(self, trainingData, learningRate, epochs, outputClassCount):
         print("{} {} {}".format('Training will be done for', epochs, 'epochs.'))
         for i in range(epochs):
-            if (i+1)%10 == 0:
+            if (i+1)%5 == 0:
                 learningRate /= 2
             print("{}-{}".format('Current Epoch', i))
             print("{}-{}".format('Learning Rate', learningRate))
