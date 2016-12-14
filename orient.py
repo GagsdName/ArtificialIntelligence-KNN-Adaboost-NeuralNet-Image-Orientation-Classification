@@ -1,7 +1,7 @@
 from __future__ import division
 import sys, math, operator
 import numpy as np
-#from artificial_nn import NeuralNet
+from artificial_nn import NeuralNet
 # ************************************** Knn ************************************************
 
 #Nearest Neighbor Classifier
