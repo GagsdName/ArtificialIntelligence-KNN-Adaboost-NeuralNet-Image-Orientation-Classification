@@ -225,10 +225,11 @@ if mode == 'nnet':
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
+	hiddenCount = int(inputArg[3])
 	learningRate = 3.6
 	epochs = 25
 	nnet = NeuralNet()
-	nnet.initializeNN(192, int(stump), 4)
+	nnet.initializeNN(192, hiddenCount, 4)
 	# print("{}:{}".format('Learning Rate', learningRate))
 	nnet.train_Network(train_dict, learningRate, epochs, 4)
 	# nnet.printNN()
