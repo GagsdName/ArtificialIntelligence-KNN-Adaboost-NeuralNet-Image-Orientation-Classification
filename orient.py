@@ -104,6 +104,7 @@ def run_adaboost_test():
 	total = 0
 	correct_labels = []
 	predicted_labels = []
+	f1 = open('adaboost_output.txt', 'w')
 	for i in test_dict:
 		orientation = test_dict[i].keys()[0]
 		vector = test_dict[i].values()[0]
@@ -118,6 +119,7 @@ def run_adaboost_test():
 		total += 1
 		correct_labels.append(orientation)
 		predicted_labels.append(predicted_orientation)
+		f1.write(str(i)+" "+str(predicted_orientation)+"\n")
 
 	printConfusionMatrix(create_conf_matrix(correct_labels, predicted_labels, 4))
 	print "Accuracy: ",
