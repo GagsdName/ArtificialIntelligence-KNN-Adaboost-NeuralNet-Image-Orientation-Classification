@@ -235,12 +235,11 @@ if mode == "adaboost":
 	run_adaboost_test()
 
 if mode == 'nnet' or 'best':
-	readTestFile(str(test_file))
 	# stump = number of neurons in hidden layer
 	# Output classes = 4 ==> Number of neurons in outputLayer = 4
 	# Number of neurons in inputLayer = length of feature vector = 192
 	# Set-up the Neural Net
-	hiddenCount = int(inputArg[3])
+	hiddenCount = int(inputArg[3]) if mode=='nnet' else 4
 	learningRate = 3.6
 	epochs = 25
 	nnet = NeuralNet()
