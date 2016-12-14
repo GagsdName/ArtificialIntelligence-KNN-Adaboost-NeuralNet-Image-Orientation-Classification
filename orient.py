@@ -1,11 +1,15 @@
 from __future__ import division
 import sys, math, operator
 import numpy as np
-from artificial_nn import NeuralNet
+#from artificial_nn import NeuralNet
 # ************************************** Knn ************************************************
 
 #Nearest Neighbor Classifier
 def nearestNeighbor():
+	w = 4 #length and width of the confusion matrix - given assumption in problem statement - total number of topics is 20
+        conf_mtr = [[0 for x in range(w)] for y in range(w)] #intializing confusion matrix
+        Labels = {"0":0,"90":1,"180":2,"270":3}
+        f1 = open('nearest_output.txt', 'w')
 	correct = 0
 	total = 0
 	for pic in test_dict.values():
@@ -22,13 +26,24 @@ def nearestNeighbor():
 				if distance < min_distance:
 					orientation_predicted = temp_orientation
 					min_distance = distance
-		print "Orientation: " + str(orientation) + "		Predicted: " + str(orientation_predicted)
+		print "Image ID: "+ test_dict.keys()[test_dict.values().index(pic)] + "    Orientation: " + str(orientation) +\
+                 "              Predicted: " + str(orientation_predicted)
+                f1.write(str(test_dict.keys()[test_dict.values().index(pic)])+" "+str(orientation_predicted)+"\n")
 		if orientation_predicted == orientation:
 			correct += 1
+		else: conf_mtr[Labels[str(orientation)]][Labels[str(orientation_predicted)]] +=1
 		total += 1
+	
+	#printing confusion matrix
+        for x in range(4):
+        	temp = ""
+                for y in range(4):
+                        temp = temp + str(conf_mtr[x][y])+"\t"
+                print temp+"\n"
+
 
 	print "Accuracy: ",
-	print correct*100.0/total
+	print str(correct*100.0/total)+"%"
 	return
 # ************************************** Adaboost ************************************************
 stump_dict={}
